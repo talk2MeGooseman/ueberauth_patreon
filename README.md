@@ -34,11 +34,11 @@
       redirect_uri: System.get_env("PATREON_REDIRECT_URI")
     ```
 
-1.  Include the Überauth plug in your controller:
+1.  Include the Überauth plug in your router pipeline:
 
     ```elixir
-    defmodule MyApp.AuthController do
-      use MyApp.Web, :controller
+    defmodule TestPatreonWeb.Router do
+      use TestPatreonWeb, :router
 
       pipeline :browser do
         plug Ueberauth
@@ -47,10 +47,10 @@
     end
     ```
 
-1.  Create the request and callback routes if you haven't already:
+1.  Add the request and callback routes:
 
     ```elixir
-    scope "/auth", MyApp do
+    scope "/auth", TestPatreonWeb do
       pipe_through :browser
 
       get "/:provider", AuthController, :request
@@ -61,8 +61,8 @@
 1. Create a new controller or use an existing controller that implements callbacks to deal with `Ueberauth.Auth` and `Ueberauth.Failure` responses from Patreon.
 
     ```elixir
-      defmodule MyApp.AuthController do
-        use MyApp.Web, :controller
+      defmodule TestPatreonWeb.AuthController do
+        use TestPatreonWeb, :controller
 
         def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
           Logger.debug(_fails)
