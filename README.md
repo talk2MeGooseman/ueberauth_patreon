@@ -65,7 +65,6 @@
         use TestPatreonWeb, :controller
 
         def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
-          Logger.debug(_fails)
           conn
           |> put_flash(:error, "Failed to authenticate.")
           |> redirect(to: "/")
