@@ -127,7 +127,7 @@ defmodule Ueberauth.Strategy.Patreon do
 
     case Ueberauth.Strategy.Patreon.OAuth.get(
            token.access_token,
-           "https://www.patreon.com/api/oauth2/v2/identity&fields%5Buser%5D=full_name,email,first_name,last_name,about,image_url,url"
+           "https://www.patreon.com/api/oauth2/v2/identity&fields[user]=full_name,email,first_name,last_name,about,image_url,url"
          ) do
       {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
         set_errors!(conn, [error("token", "unauthorized")])
