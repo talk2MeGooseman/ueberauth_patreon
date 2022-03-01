@@ -40,6 +40,7 @@ defmodule Ueberauth.Strategy.Patreon.OAuth do
       |> Application.fetch_env!(Ueberauth.Strategy.Patreon.OAuth)
       |> check_credential(:client_id)
       |> check_credential(:client_secret)
+      |> check_credential(:redirect_uri)
 
     client_opts =
       @defaults
