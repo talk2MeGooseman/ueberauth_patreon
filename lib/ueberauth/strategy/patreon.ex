@@ -15,8 +15,10 @@ defmodule Ueberauth.Strategy.Patreon do
       "https://www.patreon.com/oauth2/authorize"
   """
   def handle_request!(conn) do
+    scopes = conn.params["scope"] || option(conn, :default_scope)
+
     params =
-      []
+      [scope: scopes]
       |> with_state_param(conn)
 
     module = option(conn, :oauth2_module)
@@ -85,9 +87,28 @@ defmodule Ueberauth.Strategy.Patreon do
   struct.
   """
   def info(conn) do
+    %{ "data" => %{
+      "attributes" => %{
+        "full_name" => full_name,
+        "first_name" => first_name,
+        "last_name" => last_name,
+        "about" => about,
+        "image_url" => image_url,
+        "url" => url,
+        "email" => email
+      }
+    }} = conn.private.patreon_user
+
     %Info{
-      email: conn.private.patreon_user.data.attributes.email,
-      name: conn.private.patreon_user.data.attributes.name,
+      email: email,
+      name: full_name,
+      first_name: first_name,
+      last_name: last_name,
+      description: about,
+      image: image_url,
+      urls: %{
+        profile: url
+      }
     }
   end
 
@@ -106,7 +127,7 @@ defmodule Ueberauth.Strategy.Patreon do
 
     case Ueberauth.Strategy.Patreon.OAuth.get(
            token.access_token,
-           "https://www.patreon.com/api/oauth2/v2/identity"
+           "https://www.patreon.com/api/oauth2/v2/identity&fields%5Buser%5D=full_name,email,first_name,last_name,about,image_url,url"
          ) do
       {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
         set_errors!(conn, [error("token", "unauthorized")])

@@ -21,7 +21,7 @@
     ```elixir
     config :ueberauth, Ueberauth,
       providers: [
-        patreon: {Ueberauth.Strategy.Patreon},
+        patreon: {Ueberauth.Strategy.Patreon, , [default_scope: "users pledges-to-me my-campaigns identity[email] identity"]},
       ]
     ```
 
