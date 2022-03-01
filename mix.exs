@@ -5,16 +5,18 @@ defmodule UeberauthPatreon.MixProject do
     [
       app: :ueberauth_patreon,
       description: "Ueberauth strategy for Patreon OAuth.",
-      links: %{"GitHub" => ""},
-      licenses: ["MIT"],
       version: "1.0.0",
       elixir: "~> 1.13",
-      source_url: "",
-      homepage_url: "",
+      source_url: "https://github.com/talk2MeGooseman/ueberauth_patreon",
+      homepage_url: "https://github.com/talk2MeGooseman/ueberauth_patreon",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      package: [
+        links: %{"GitHub" => "https://github.com/talk2MeGooseman/ueberauth_patreon"},
+        licenses: ["MIT"],
+      ],
       docs: [
-        # main: "MyApp", # The main page in the docs
+        main: "readme",
         extras: ["README.md"]
       ]
     ]
