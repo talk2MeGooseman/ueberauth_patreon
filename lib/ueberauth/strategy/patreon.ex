@@ -1,4 +1,57 @@
 defmodule Ueberauth.Strategy.Patreon do
+  @moduledoc """
+  Provides an Ueberauth strategy for authenticating with Patreon.
+
+  ### Setup
+
+  Create an application in Patreon for you to use.
+
+  Register a new application at: [patreon dev portal](https://www.patreon.com/portal/registration/register-clients) and get the `client_id` and `client_secret`.
+
+  Include the provider in your configuration for Ueberauth, provide a lost of scopes you want to request from the user using the `default_scope`.
+
+      config :ueberauth, Ueberauth,
+        providers: [
+          patreon: { Ueberauth.Strategy.Patreon, [default_scope: "identity[email] identity"]] }
+        ]
+
+  Then include the configuration for twitch.
+
+      config :ueberauth, Ueberauth.Strategy.Patreon.OAuth,
+        client_id: System.get_env("PATREON_CLIENT_ID"),
+        client_secret: System.get_env("PATREON_CLIENT_SECRET")
+
+  If you haven't already, create a pipeline and setup routes for the callback handler to receive the credentials.
+
+      pipeline :browser do
+        plug Ueberauth
+        ...
+    end
+
+      scope "/auth", MyApp do
+        pipe_through :browser
+
+        get "/:provider", AuthController, :request
+        get "/:provider/callback", AuthController, :callback
+      end
+
+
+  Create the controller for the callback where you will handle the `Ueberauth.Auth` struct
+
+      defmodule MyApp.AuthController do
+        use MyApp.Web, :controller
+
+        def callback_phase(%{ assigns: %{ ueberauth_failure: fails } } = conn, _params) do
+          # do things with the failure
+        end
+
+        def callback_phase(%{ assigns: %{ ueberauth_auth: auth } } = conn, params) do
+          # do things with the auth, like create the user or log them in
+        end
+      end
+
+  """
+
   use Ueberauth.Strategy,
     oauth2_module: Ueberauth.Strategy.Patreon.OAuth
 
@@ -61,7 +114,7 @@ defmodule Ueberauth.Strategy.Patreon do
   end
 
   @doc """
-  Fetches the uid field from the Twitch response. This defaults to the option `uid_field` which in-turn defaults to `id`
+  Fetches the uid field from the Patreon response. This defaults to the option `uid_field` which in-turn defaults to `id`
   """
   def uid(conn) do
     %{"data" => user} = conn.private.patreon_user
@@ -78,7 +131,8 @@ defmodule Ueberauth.Strategy.Patreon do
       token: token.access_token,
       token_type: token.token_type,
       refresh_token: token.refresh_token,
-      expires_at: token.expires_at
+      expires_at: token.expires_in,
+      scopes: token.scope
     }
   end
 
@@ -87,17 +141,19 @@ defmodule Ueberauth.Strategy.Patreon do
   struct.
   """
   def info(conn) do
-    %{ "data" => %{
-      "attributes" => %{
-        "full_name" => full_name,
-        "first_name" => first_name,
-        "last_name" => last_name,
-        "about" => about,
-        "image_url" => image_url,
-        "url" => url,
-        "email" => email
+    %{
+      "data" => %{
+        "attributes" => %{
+          "full_name" => full_name,
+          "first_name" => first_name,
+          "last_name" => last_name,
+          "about" => about,
+          "image_url" => image_url,
+          "url" => url,
+          "email" => email
+        }
       }
-    }} = conn.private.patreon_user
+    } = conn.private.patreon_user
 
     %Info{
       email: email,

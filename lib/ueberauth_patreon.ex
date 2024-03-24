@@ -1,5 +1,3 @@
 defmodule UeberauthPatreon do
-  @moduledoc """
-  Documentation for `UeberauthPatreon`.
-  """
+  @moduledoc false
 end

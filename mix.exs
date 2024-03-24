@@ -1,24 +1,25 @@
 defmodule UeberauthPatreon.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/talk2MeGooseman/ueberauth_patreon"
+  @version "1.0.1"
+
   def project do
     [
       app: :ueberauth_patreon,
       description: "Ueberauth strategy for Patreon OAuth.",
-      version: "1.0.0",
+      version: @version,
       elixir: "~> 1.13",
-      source_url: "https://github.com/talk2MeGooseman/ueberauth_patreon",
-      homepage_url: "https://github.com/talk2MeGooseman/ueberauth_patreon",
+      source_url: @source_url,
+      homepage_url: @source_url,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: [
         links: %{"GitHub" => "https://github.com/talk2MeGooseman/ueberauth_patreon"},
-        licenses: ["MIT"],
+        licenses: ["MIT"]
       ],
-      docs: [
-        main: "readme",
-        extras: ["README.md"]
-      ]
+      docs: docs(),
+      aliases: aliases()
     ]
   end
 
@@ -34,7 +35,26 @@ defmodule UeberauthPatreon.MixProject do
     [
       {:ueberauth, "~> 0.7"},
       {:oauth2, "~> 2.0"},
-      {:ex_doc, "~> 0.27", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
+      {:credo, "~> 1.0", only: [:dev, :test]}
+    ]
+  end
+
+  defp docs do
+    [
+      extras: [
+        "README.md": [title: "Overview"],
+        "CHANGELOG.md": [title: "Changelog"]
+      ],
+      main: "readme",
+      source_url: @source_url,
+      source_ref: "#v{@version}"
+    ]
+  end
+
+  defp aliases do
+    [
+      lint: ["format", "credo"]
     ]
   end
 end
