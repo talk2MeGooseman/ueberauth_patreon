@@ -126,13 +126,21 @@ defmodule Ueberauth.Strategy.Patreon do
   """
   def credentials(conn) do
     token = conn.private.patreon_token
+    expires_at = case token do
+      %{expires_in: expires} -> expires
+      %{expires_at: expires} -> expires
+    end
+    scope = case token do
+      %{scope: scope} -> scope
+      %{other_params: %{"scope" => scope}}  -> scope
+    end
 
     %Credentials{
       token: token.access_token,
       token_type: token.token_type,
       refresh_token: token.refresh_token,
-      expires_at: token.expires_in,
-      scopes: token.scope
+      expires_at: expires_at,
+      scopes: scope
     }
   end
 
