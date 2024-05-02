@@ -149,14 +149,13 @@ defmodule Ueberauth.Strategy.Patreon do
           "last_name" => last_name,
           "about" => about,
           "image_url" => image_url,
-          "url" => url,
-          "email" => email
-        }
+          "url" => url
+        } = data
       }
     } = conn.private.patreon_user
 
     %Info{
-      email: email,
+      email: data["email"],
       name: full_name,
       first_name: first_name,
       last_name: last_name,
